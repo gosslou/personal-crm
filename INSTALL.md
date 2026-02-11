@@ -21,7 +21,7 @@ Ce guide couvre tous les scenarios d'installation possibles.
 
 1. **Fork/Import le projet**
    - Methode 1 : Cliquer sur le badge "Run on Replit" dans le README
-   - Methode 2 : Sur Replit.com > "Create" > "Import from GitHub" > `YOUR-USERNAME/personal-crm`
+   - Methode 2 : Sur Replit.com > "Create" > "Import from GitHub" > `gosslou/personal-crm`
 
 2. **Configuration automatique**
    - Replit detecte automatiquement le fichier `.replit`
@@ -30,7 +30,7 @@ Ce guide couvre tous les scenarios d'installation possibles.
 3. **Lancer l'app**
    - Cliquez sur "Run"
    - Attendez ~30 secondes
-   - L'URL s'affiche en haut (ex: `https://personal-crm-YOUR-USERNAME.replit.app`)
+   - L'URL s'affiche en haut (ex: `https://personal-crm-gosslou.replit.app`)
 
 4. **Configurer les secrets (optionnel)**
    - Menu gauche > Icone cadenas > "Secrets"
@@ -68,7 +68,7 @@ Ce guide couvre tous les scenarios d'installation possibles.
 1. **Deployer depuis GitHub**
    - Allez sur railway.app/new
    - "Deploy from GitHub repo"
-   - Selectionnez `YOUR-USERNAME/personal-crm`
+   - Selectionnez `gosslou/personal-crm`
    - Railway detecte automatiquement Procfile et requirements.txt
 
 2. **Configuration des variables**
@@ -104,7 +104,7 @@ Ce guide couvre tous les scenarios d'installation possibles.
 
 1. **Cloner le repo**
    ```bash
-   git clone https://github.com/YOUR-USERNAME/personal-crm.git
+   git clone https://github.com/gosslou/personal-crm.git
    cd personal-crm
    ```
 

@@ -25,7 +25,7 @@ Un CRM personnel avec onboarding guide pour gerer efficacement vos contacts prof
 
 1. Cliquez sur ce bouton :
 
-   [![Run on Replit](https://replit.com/badge/github/YOUR-USERNAME/personal-crm)](https://replit.com/new/github/YOUR-USERNAME/personal-crm)
+   [![Run on Replit](https://replit.com/badge/github/gosslou/personal-crm)](https://replit.com/new/github/gosslou/personal-crm)
 
 2. Creez un compte Replit gratuit (si vous n'en avez pas)
 3. Le projet se clone automatiquement
@@ -52,7 +52,7 @@ Un CRM personnel avec onboarding guide pour gerer efficacement vos contacts prof
 
 ```bash
 # 1. Cloner le repo
-git clone https://github.com/YOUR-USERNAME/personal-crm.git
+git clone https://github.com/gosslou/personal-crm.git
 cd personal-crm
 
 # 2. Creer un environnement virtuel
@@ -159,7 +159,7 @@ Plan gratuit : mise en veille apres 1h d'inactivite. Upgrade vers Hacker ($7/moi
 
 - [Guide d'installation detaille](./INSTALL.md)
 - [FAQ complete](./docs/FAQ.md)
-- [Issues GitHub](https://github.com/YOUR-USERNAME/personal-crm/issues)
+- [Issues GitHub](https://github.com/gosslou/personal-crm/issues)
 
 ---
 
