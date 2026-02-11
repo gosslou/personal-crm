@@ -28,7 +28,7 @@ class Config:
 
     # Application
     APP_NAME = "CRM Personnel"
-    APP_VERSION = "1.1.0"
+    APP_VERSION = "1.2.0"
 
     # GitHub (pour systeme de mise a jour)
     GITHUB_REPO = "gosslou/personal-crm"
@@ -36,6 +36,12 @@ class Config:
 
     # Onboarding
     ENABLE_WEB_ENRICHMENT = os.environ.get('ENABLE_WEB_ENRICHMENT', 'True').lower() == 'true'
+
+    # Claude API (Anthropic)
+    CLAUDE_API_KEY = os.environ.get('CLAUDE_API_KEY', '')
+    CLAUDE_MODEL = os.environ.get('CLAUDE_MODEL', 'claude-sonnet-4-5-20250929')
+    CLAUDE_MAX_TOKENS = int(os.environ.get('CLAUDE_MAX_TOKENS', 1024))
+    ENABLE_AI_FEATURES = os.environ.get('ENABLE_AI_FEATURES', 'True').lower() == 'true'
 
     @staticmethod
     def init_app(app):

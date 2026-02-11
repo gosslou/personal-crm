@@ -67,7 +67,7 @@
             opacity: 0.9;
         }
 
-        .update-link {
+        .header-link, .update-link {
             color: rgba(255,255,255,0.85);
             text-decoration: none;
             font-size: 0.85rem;
@@ -78,7 +78,7 @@
             position: relative;
         }
 
-        .update-link:hover {
+        .header-link:hover, .update-link:hover {
             color: white;
             border-color: rgba(255,255,255,0.6);
             background: rgba(255,255,255,0.1);
@@ -438,6 +438,85 @@
             to   { opacity: 0; }
         }
 
+        /* Suggestions widget */
+        .suggestions-widget {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        .suggestions-widget h3 {
+            font-size: 1rem;
+            margin-bottom: 0.8rem;
+            color: var(--primary);
+        }
+
+        .suggestion-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .suggestion-item:last-child { border-bottom: none; }
+
+        .suggestion-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .icon-follow_up { background: #dbeafe; }
+        .icon-anniversaire { background: #fce7f3; }
+        .icon-networking { background: #dcfce7; }
+        .icon-relance { background: #fef3c7; }
+
+        .suggestion-text h4 {
+            font-size: 0.9rem;
+            margin-bottom: 0.15rem;
+        }
+
+        .suggestion-text p {
+            font-size: 0.82rem;
+            color: var(--text-light);
+        }
+
+        /* AI briefing button */
+        .btn-ai {
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+
+        .btn-ai:hover {
+            opacity: 0.9;
+        }
+
+        .ai-briefing-content {
+            margin-top: 0.8rem;
+            padding: 1rem;
+            background: #f5f3ff;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            line-height: 1.5;
+            display: none;
+        }
+
         /* Responsive */
         @media (max-width: 600px) {
             header { flex-direction: column; gap: 0.5rem; text-align: center; }
@@ -455,6 +534,8 @@
         <h1>CRM Personnel</h1>
         <div class="header-right">
             <div class="header-stats" id="stats">Chargement...</div>
+            <a href="/assistant" class="header-link" title="Assistant IA">Assistant</a>
+            <a href="/settings" class="header-link" title="Parametres">Parametres</a>
             <a href="/admin/updates" class="update-link" title="Mises a jour">
                 Mises a jour
                 <span class="update-dot" id="update-dot"></span>
@@ -463,6 +544,14 @@
     </header>
 
     <div class="container">
+
+        <!-- ============================================
+             SUGGESTIONS IA (widget dashboard)
+             ============================================ -->
+        <div class="suggestions-widget" id="suggestionsWidget">
+            <h3>Suggestions IA</h3>
+            <div id="suggestionsList"></div>
+        </div>
 
         <!-- ============================================
              BARRE D'ACTIONS : Recherche + Bouton Ajouter
@@ -980,6 +1069,16 @@
                         Modifié le ${formaterDate(c.date_modification)}
                     </div>
 
+                    <div style="margin-top: 1rem;">
+                        <button class="btn-ai" onclick="genererBriefingIA(${c.id})">
+                            Briefing IA
+                        </button>
+                        <a href="/briefing/${c.id}" target="_blank" style="margin-left: 0.5rem; font-size: 0.85rem; color: var(--primary);">
+                            Briefing classique
+                        </a>
+                        <div class="ai-briefing-content" id="aiBriefing-${c.id}"></div>
+                    </div>
+
                     <div class="form-actions" style="margin-top: 1rem;">
                         <button class="btn btn-danger btn-small"
                                 onclick="supprimerContact(${c.id})">Supprimer</button>
@@ -1074,6 +1173,75 @@
 
         // Charge les contacts au démarrage de la page
         chargerContacts();
+
+        // ==========================================
+        // BRIEFING IA
+        // ==========================================
+
+        async function genererBriefingIA(contactId) {
+            const div = document.getElementById(`aiBriefing-${contactId}`);
+            div.style.display = 'block';
+            div.textContent = 'Generation du briefing IA en cours...';
+
+            try {
+                const resp = await fetch(`/api/claude/briefing/${contactId}`);
+                const data = await resp.json();
+
+                if (data.success) {
+                    div.textContent = data.briefing;
+                } else {
+                    div.textContent = data.message || 'Erreur lors de la generation du briefing.';
+                }
+            } catch (e) {
+                div.textContent = 'Erreur de connexion au serveur.';
+            }
+        }
+
+        // ==========================================
+        // SUGGESTIONS IA (dashboard)
+        // ==========================================
+
+        async function chargerSuggestions() {
+            try {
+                const resp = await fetch('/api/claude/suggestions');
+                const data = await resp.json();
+
+                if (data.success && data.suggestions && data.suggestions.length > 0) {
+                    const widget = document.getElementById('suggestionsWidget');
+                    const list = document.getElementById('suggestionsList');
+
+                    const icons = {
+                        follow_up: '📞',
+                        anniversaire: '🎂',
+                        networking: '🤝',
+                        relance: '📧'
+                    };
+
+                    list.innerHTML = data.suggestions.map(s => `
+                        <div class="suggestion-item">
+                            <div class="suggestion-icon icon-${s.type || 'follow_up'}">
+                                ${icons[s.type] || '💡'}
+                            </div>
+                            <div class="suggestion-text">
+                                <h4>${s.titre}</h4>
+                                <p>${s.description}</p>
+                            </div>
+                        </div>
+                    `).join('');
+
+                    widget.style.display = 'block';
+                }
+            } catch (e) {
+                // Silencieux - les suggestions sont optionnelles
+            }
+        }
+
+        // ==========================================
+        // INITIALISATION
+        // ==========================================
+
+        // Charge les suggestions IA en arriere-plan
+        chargerSuggestions();
 
         // Vérifie les mises à jour en arrière-plan
         fetch('/admin/updates/check')

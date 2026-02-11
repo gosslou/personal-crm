@@ -4,6 +4,26 @@ Toutes les modifications notables de ce projet seront documentees dans ce fichie
 
 Le format est base sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 
+## [1.2.0] - 2026-02-11
+
+### Ajoute
+- Integration de l'API Claude (Anthropic) pour fonctionnalites IA
+- Briefings intelligents generes par IA pour chaque contact
+- Assistant conversationnel IA (page /assistant)
+- Suggestions proactives sur le dashboard
+- Page de parametres (/settings) pour configurer la cle API
+- Choix du modele Claude (Sonnet 4.5, Haiku 4.5, Opus 4.6)
+- Bouton "Briefing IA" dans le detail de chaque contact
+- Liens navigation vers Assistant et Parametres dans l'en-tete
+- Documentation de l'integration Claude (docs/CLAUDE_INTEGRATION.md)
+
+### Technique
+- Nouveau module `claude_integration.py` avec classe ClaudeIntegration
+- 5 nouvelles routes API pour /api/claude/*
+- 2 nouvelles pages (settings, assistant)
+- Dependance `anthropic>=0.39.0` ajoutee
+- Script de test scripts/test_claude_integration.py
+
 ## [1.1.0] - 2026-02-11
 
 ### Ajoute

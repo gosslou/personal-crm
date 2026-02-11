@@ -35,6 +35,7 @@ from models import valider_contact, valider_note, ValidationError
 from crm_briefing import get_contact_briefing, format_briefing_text
 from onboarding import onboarding_bp, is_first_time_user, get_master_profile
 from update import UpdateManager
+from claude_integration import ClaudeIntegration
 
 # Creation de l'application Flask
 app = Flask(__name__, static_folder='static', static_url_path='/static')
@@ -56,6 +57,9 @@ app.register_blueprint(onboarding_bp)
 # Gestionnaire de mises a jour
 update_manager = UpdateManager()
 
+# Integration Claude API
+claude = ClaudeIntegration()
+
 
 @app.before_request
 def check_onboarding():
@@ -68,7 +72,9 @@ def check_onboarding():
         path.startswith('/api/') or
         path.startswith('/static/') or
         path.startswith('/briefing') or
-        path.startswith('/admin')):
+        path.startswith('/admin') or
+        path.startswith('/settings') or
+        path.startswith('/assistant')):
         return None
     from flask import session
     if session.get('skip_onboarding'):
@@ -167,7 +173,7 @@ def route_briefing_text(contact_id):
 @app.route('/<path:path>')
 def serve_static(path):
     """Sert les fichiers statiques du frontend."""
-    if path.startswith(('onboarding', 'api/', 'briefing', 'static/', 'admin')):
+    if path.startswith(('onboarding', 'api/', 'briefing', 'static/', 'admin', 'settings', 'assistant')):
         return jsonify({"erreur": "Non trouve"}), 404
     file_path = os.path.join(app.static_folder, path)
     if os.path.isfile(file_path):
@@ -299,6 +305,106 @@ def list_backups():
 def create_backup():
     """Cree un backup manuel de la base de donnees."""
     result = update_manager.backup_database()
+    return jsonify(result)
+
+
+# --- Routes Claude API ---
+
+
+@app.route('/settings')
+def settings_page():
+    """Page de parametres."""
+    return render_template('settings.html',
+                           claude_configured=claude.is_configured(),
+                           model=claude.model,
+                           max_tokens=claude.max_tokens)
+
+
+@app.route('/assistant')
+def assistant_page():
+    """Page de l'assistant IA."""
+    return render_template('assistant.html',
+                           claude_configured=claude.is_configured())
+
+
+@app.route('/api/claude/test')
+def claude_test():
+    """Teste la connexion a l'API Claude."""
+    result = claude.test_connection()
+    return jsonify(result)
+
+
+@app.route('/api/claude/settings', methods=['POST'])
+def claude_settings():
+    """Met a jour les parametres Claude."""
+    data = request.get_json()
+    if not data:
+        return jsonify({"success": False, "message": "Donnees requises"}), 400
+
+    if 'api_key' in data:
+        claude.update_api_key(data['api_key'])
+
+    if 'model' in data:
+        claude.model = data['model']
+
+    if 'max_tokens' in data:
+        claude.max_tokens = min(max(int(data['max_tokens']), 100), 4096)
+
+    return jsonify({
+        "success": True,
+        "message": "Parametres enregistres",
+        "configured": claude.is_configured()
+    })
+
+
+@app.route('/api/claude/briefing/<int:contact_id>')
+def claude_briefing(contact_id):
+    """Genere un briefing IA pour un contact."""
+    contact = get_contact(contact_id)
+    if contact is None:
+        return jsonify({"erreur": f"Contact {contact_id} non trouve"}), 404
+
+    master = get_master_profile()
+    result = claude.generate_briefing(contact, master_profile=master)
+    return jsonify(result)
+
+
+@app.route('/api/claude/assistant', methods=['POST'])
+def claude_assistant():
+    """Assistant conversationnel."""
+    data = request.get_json()
+    if not data or not data.get('question'):
+        return jsonify({"success": False, "message": "Question requise"}), 400
+
+    # Construire le contexte des contacts
+    contacts = get_all_contacts()
+    contacts_context = ""
+    if contacts:
+        summaries = []
+        for c in contacts[:20]:
+            infos = c.get("informations", {}) or {}
+            notes = c.get("notes", []) or []
+            last_note = notes[-1].get("contenu", "") if notes else ""
+            summaries.append(
+                f"- {c.get('prenom', '')} {c.get('nom', '')} ({c.get('categorie', '')}) "
+                f"- {infos.get('societe', '')} {infos.get('ville', '')} - "
+                f"Derniere note: {last_note[:80]}"
+            )
+        contacts_context = "\n".join(summaries)
+
+    master = get_master_profile()
+    result = claude.ask_assistant(data['question'],
+                                  contacts_context=contacts_context,
+                                  master_profile=master)
+    return jsonify(result)
+
+
+@app.route('/api/claude/suggestions')
+def claude_suggestions():
+    """Genere des suggestions pour le dashboard."""
+    contacts = get_all_contacts()
+    master = get_master_profile()
+    result = claude.generate_dashboard_suggestions(contacts, master_profile=master)
     return jsonify(result)
 
 
