@@ -30,6 +30,10 @@ class Config:
     APP_NAME = "CRM Personnel"
     APP_VERSION = "1.0.0"
 
+    # GitHub (pour systeme de mise a jour)
+    GITHUB_REPO = "gosslou/personal-crm"
+    GITHUB_API_URL = f"https://api.github.com/repos/{GITHUB_REPO}"
+
     # Onboarding
     ENABLE_WEB_ENRICHMENT = os.environ.get('ENABLE_WEB_ENRICHMENT', 'True').lower() == 'true'
 

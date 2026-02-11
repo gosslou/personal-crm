@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mises a jour - CRM Personnel</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --radius: 10px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        .top-bar {
+            background: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .top-bar h1 { font-size: 1.3rem; }
+        .top-bar a {
+            color: rgba(255,255,255,0.85);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .top-bar a:hover { color: white; }
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        .card h2 {
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .version-badge {
+            display: inline-block;
+            padding: 3px 12px;
+            background: var(--primary);
+            color: white;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .alert {
+            padding: 14px 20px;
+            border-radius: var(--radius);
+            margin-bottom: 16px;
+            font-size: 0.95rem;
+        }
+        .alert-success { background: #d1fae5; color: #065f46; }
+        .alert-error { background: #fee2e2; color: #991b1b; }
+        .alert-info { background: #dbeafe; color: #1e40af; }
+        .alert-update {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 20px;
+        }
+        .alert-update h3 { margin-bottom: 8px; }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn-update {
+            background: white;
+            color: #059669;
+            margin-top: 12px;
+        }
+        .btn-update:hover { background: #f0fdf4; }
+        .btn-update:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-secondary {
+            background: var(--border);
+            color: var(--text);
+        }
+        .btn-secondary:hover { background: #cbd5e1; }
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-light);
+        }
+        .spinner {
+            border: 3px solid var(--border);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 12px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .changelog-content {
+            max-height: 350px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+        .changelog-content h2 { font-size: 1.05rem; margin: 16px 0 8px; color: var(--primary); }
+        .changelog-content h3 { font-size: 0.95rem; margin: 12px 0 6px; }
+        .changelog-content h4 { font-size: 0.9rem; margin: 8px 0 4px; }
+        .changelog-content li { margin-left: 20px; }
+        .backup-list { list-style: none; }
+        .backup-item {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .backup-item:last-child { border-bottom: none; }
+        .backup-meta {
+            font-size: 0.82rem;
+            color: var(--text-light);
+        }
+        .empty-text {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            padding: 8px 0;
+        }
+        details summary {
+            cursor: pointer;
+            margin-top: 8px;
+            font-size: 0.85rem;
+        }
+        details pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            overflow-x: auto;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <h1>Mises a jour</h1>
+        <a href="/">&larr; Retour au CRM</a>
+    </div>
+
+    <div class="container">
+        <!-- Version actuelle -->
+        <div class="card">
+            <h2>Version actuelle</h2>
+            <p>
+                <span class="version-badge" id="current-version">v{{ config.APP_VERSION }}</span>
+                &nbsp; {{ config.APP_NAME }}
+            </p>
+        </div>
+
+        <!-- Alertes -->
+        <div id="alert-container"></div>
+
+        <!-- Statut mise a jour -->
+        <div id="update-status">
+            <div class="card">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Verification des mises a jour...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Changelog -->
+        <div class="card" id="changelog-card" style="display:none;">
+            <h2>Changelog</h2>
+            <div class="changelog-content" id="changelog-content"></div>
+        </div>
+
+        <!-- Backups -->
+        <div class="card">
+            <h2>Sauvegardes</h2>
+            <p style="color: var(--text-light); font-size: 0.85rem; margin-bottom: 12px;">
+                Les 5 dernieres sauvegardes sont conservees automatiquement.
+            </p>
+            <button class="btn btn-secondary" onclick="createBackup()" id="backup-btn" style="margin-bottom: 16px;">
+                Creer une sauvegarde maintenant
+            </button>
+            <ul class="backup-list" id="backup-list">
+                <li class="empty-text">Chargement...</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        async function checkForUpdates() {
+            try {
+                const response = await fetch('/admin/updates/check');
+                const data = await response.json();
+                const statusDiv = document.getElementById('update-status');
+
+                if (data.error) {
+                    statusDiv.innerHTML = `
+                        <div class="alert alert-error">${data.message}</div>
+                    `;
+                    return;
+                }
+
+                if (data.update_available) {
+                    statusDiv.innerHTML = `
+                        <div class="alert alert-update">
+                            <h3>Mise a jour disponible !</h3>
+                            <p><strong>Nouvelle version :</strong> ${data.latest_version}</p>
+                            <p><strong>Version actuelle :</strong> ${data.current_version}</p>
+                            ${data.release_notes ? `<p style="margin-top:8px;opacity:0.9;">${data.release_notes}</p>` : ''}
+                            <button class="btn btn-update" onclick="applyUpdate()" id="update-btn">
+                                Mettre a jour maintenant
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    statusDiv.innerHTML = `
+                        <div class="alert alert-success">
+                            Vous etes a jour ! (v${data.current_version})
+                        </div>
+                    `;
+                }
+
+                loadChangelog();
+            } catch (error) {
+                document.getElementById('update-status').innerHTML = `
+                    <div class="alert alert-error">Erreur : ${error.message}</div>
+                `;
+            }
+        }
+
+        async function applyUpdate() {
+            if (!confirm('Mettre a jour l\'application ?\\n\\nUne sauvegarde de votre base de donnees sera creee automatiquement.')) {
+                return;
+            }
+
+            const button = document.getElementById('update-btn');
+            button.disabled = true;
+            button.textContent = 'Mise a jour en cours...';
+
+            const alertContainer = document.getElementById('alert-container');
+            alertContainer.innerHTML = `
+                <div class="alert alert-info">Mise a jour en cours... Ne fermez pas cette page.</div>
+            `;
+
+            try {
+                const response = await fetch('/admin/updates/apply', { method: 'POST' });
+                const data = await response.json();
+
+                if (data.success) {
+                    alertContainer.innerHTML = `
+                        <div class="alert alert-success">
+                            ${data.message}
+                            <br><br>
+                            <strong>Redemarrez l'application pour appliquer les changements.</strong>
+                        </div>
+                    `;
+                    setTimeout(() => { loadBackups(); }, 1000);
+                } else {
+                    alertContainer.innerHTML = `
+                        <div class="alert alert-error">
+                            ${data.message}
+                            ${data.output ? `<details><summary>Details</summary><pre>${data.output}</pre></details>` : ''}
+                        </div>
+                    `;
+                    button.disabled = false;
+                    button.textContent = 'Reessayer';
+                }
+            } catch (error) {
+                alertContainer.innerHTML = `
+                    <div class="alert alert-error">Erreur : ${error.message}</div>
+                `;
+                button.disabled = false;
+                button.textContent = 'Reessayer';
+            }
+        }
+
+        async function loadChangelog() {
+            try {
+                const response = await fetch('/admin/updates/changelog');
+                const data = await response.json();
+
+                if (data.changelog && data.changelog !== 'Aucun changelog disponible.') {
+                    const html = data.changelog
+                        .replace(/^### (.*$)/gim, '<h4>$1</h4>')
+                        .replace(/^## (.*$)/gim, '<h3>$1</h3>')
+                        .replace(/^# (.*$)/gim, '<h2>$1</h2>')
+                        .replace(/^\- (.*$)/gim, '<li>$1</li>')
+                        .replace(/\n\n/g, '<br>');
+
+                    document.getElementById('changelog-content').innerHTML = html;
+                    document.getElementById('changelog-card').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Erreur changelog:', error);
+            }
+        }
+
+        async function loadBackups() {
+            try {
+                const response = await fetch('/admin/backups');
+                const data = await response.json();
+                const list = document.getElementById('backup-list');
+
+                if (data.backups.length === 0) {
+                    list.innerHTML = '<li class="empty-text">Aucune sauvegarde</li>';
+                    return;
+                }
+
+                list.innerHTML = data.backups.map(b => {
+                    const size = (b.size / 1024).toFixed(1);
+                    const date = new Date(b.created).toLocaleString('fr-FR');
+                    return `
+                        <li class="backup-item">
+                            <div>
+                                <strong>${b.name}</strong>
+                                <div class="backup-meta">${date} - ${size} Ko</div>
+                            </div>
+                        </li>
+                    `;
+                }).join('');
+            } catch (error) {
+                document.getElementById('backup-list').innerHTML =
+                    '<li class="empty-text" style="color:var(--danger);">Erreur chargement</li>';
+            }
+        }
+
+        async function createBackup() {
+            const btn = document.getElementById('backup-btn');
+            btn.disabled = true;
+            btn.textContent = 'Creation en cours...';
+
+            try {
+                const response = await fetch('/admin/backups/create', { method: 'POST' });
+                const data = await response.json();
+                const alertContainer = document.getElementById('alert-container');
+
+                if (data.success) {
+                    alertContainer.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+                    loadBackups();
+                } else {
+                    alertContainer.innerHTML = `<div class="alert alert-error">${data.message}</div>`;
+                }
+            } catch (error) {
+                document.getElementById('alert-container').innerHTML =
+                    `<div class="alert alert-error">Erreur : ${error.message}</div>`;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Creer une sauvegarde maintenant';
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            checkForUpdates();
+            loadBackups();
+        });
+    </script>
+</body>
+</html>

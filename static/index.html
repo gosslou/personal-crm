@@ -56,9 +56,44 @@
             font-weight: 700;
         }
 
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
         .header-stats {
             font-size: 0.9rem;
             opacity: 0.9;
+        }
+
+        .update-link {
+            color: rgba(255,255,255,0.85);
+            text-decoration: none;
+            font-size: 0.85rem;
+            padding: 0.3rem 0.7rem;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: var(--radius);
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .update-link:hover {
+            color: white;
+            border-color: rgba(255,255,255,0.6);
+            background: rgba(255,255,255,0.1);
+        }
+
+        .update-dot {
+            display: none;
+            position: absolute;
+            top: -3px;
+            right: -3px;
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
         }
 
         /* Conteneur principal */
@@ -418,7 +453,13 @@
          ============================================ -->
     <header>
         <h1>CRM Personnel</h1>
-        <div class="header-stats" id="stats">Chargement...</div>
+        <div class="header-right">
+            <div class="header-stats" id="stats">Chargement...</div>
+            <a href="/admin/updates" class="update-link" title="Mises a jour">
+                Mises a jour
+                <span class="update-dot" id="update-dot"></span>
+            </a>
+        </div>
     </header>
 
     <div class="container">
@@ -1033,6 +1074,16 @@
 
         // Charge les contacts au démarrage de la page
         chargerContacts();
+
+        // Vérifie les mises à jour en arrière-plan
+        fetch('/admin/updates/check')
+            .then(r => r.json())
+            .then(data => {
+                if (data.update_available) {
+                    document.getElementById('update-dot').style.display = 'block';
+                }
+            })
+            .catch(() => {});
     </script>
 
 </body>

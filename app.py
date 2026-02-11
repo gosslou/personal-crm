@@ -15,6 +15,8 @@ Routes disponibles :
 """
 
 import os
+from datetime import datetime
+from pathlib import Path
 
 from flask import Flask, request, jsonify, send_from_directory, render_template, redirect, flash
 from flask_cors import CORS
@@ -32,6 +34,7 @@ from database import (
 from models import valider_contact, valider_note, ValidationError
 from crm_briefing import get_contact_briefing, format_briefing_text
 from onboarding import onboarding_bp, is_first_time_user, get_master_profile
+from update import UpdateManager
 
 # Creation de l'application Flask
 app = Flask(__name__, static_folder='static', static_url_path='/static')
@@ -50,6 +53,9 @@ CORS(app)
 # Enregistrement du blueprint onboarding
 app.register_blueprint(onboarding_bp)
 
+# Gestionnaire de mises a jour
+update_manager = UpdateManager()
+
 
 @app.before_request
 def check_onboarding():
@@ -61,7 +67,8 @@ def check_onboarding():
     if (path.startswith('/onboarding') or
         path.startswith('/api/') or
         path.startswith('/static/') or
-        path.startswith('/briefing')):
+        path.startswith('/briefing') or
+        path.startswith('/admin')):
         return None
     from flask import session
     if session.get('skip_onboarding'):
@@ -160,7 +167,7 @@ def route_briefing_text(contact_id):
 @app.route('/<path:path>')
 def serve_static(path):
     """Sert les fichiers statiques du frontend."""
-    if path.startswith(('onboarding', 'api/', 'briefing', 'static/')):
+    if path.startswith(('onboarding', 'api/', 'briefing', 'static/', 'admin')):
         return jsonify({"erreur": "Non trouve"}), 404
     file_path = os.path.join(app.static_folder, path)
     if os.path.isfile(file_path):
@@ -249,6 +256,50 @@ def route_search_contacts():
 def health_check():
     """Verifie que le serveur fonctionne."""
     return jsonify({"status": "ok", "message": "CRM Personnel operationnel"})
+
+
+# --- Routes Admin / Mises a jour ---
+
+
+@app.route('/admin/updates')
+def updates_page():
+    """Page de gestion des mises a jour."""
+    return render_template('admin/updates.html', config=app.config)
+
+
+@app.route('/admin/updates/check')
+def check_updates():
+    """Verifie si une mise a jour est disponible."""
+    result = update_manager.check_for_updates()
+    return jsonify(result)
+
+
+@app.route('/admin/updates/apply', methods=['POST'])
+def apply_update():
+    """Applique la mise a jour depuis GitHub."""
+    result = update_manager.update_from_github()
+    return jsonify(result)
+
+
+@app.route('/admin/updates/changelog')
+def get_changelog():
+    """Recupere le changelog."""
+    changelog = update_manager.get_changelog()
+    return jsonify({'changelog': changelog})
+
+
+@app.route('/admin/backups')
+def list_backups():
+    """Liste les backups disponibles."""
+    backups = update_manager.list_backups()
+    return jsonify({'backups': backups})
+
+
+@app.route('/admin/backups/create', methods=['POST'])
+def create_backup():
+    """Cree un backup manuel de la base de donnees."""
+    result = update_manager.backup_database()
+    return jsonify(result)
 
 
 # --- Demarrage du serveur ---
