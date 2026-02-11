@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Briefing – {{ briefing.contact.nom_complet }}</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --border: #334155;
+            --text: #e2e8f0;
+            --muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent2: #a78bfa;
+            --green: #4ade80;
+            --orange: #fb923c;
+            --red: #f87171;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 16px;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 1.8em;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+        .header .categorie {
+            display: inline-block;
+            background: var(--accent2);
+            color: #fff;
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            text-transform: uppercase;
+        }
+        .section {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .section h2 {
+            font-size: 1em;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section h2 .icon { font-size: 1.2em; }
+        .info-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 6px 12px;
+        }
+        .info-grid .label {
+            color: var(--muted);
+            font-size: 0.9em;
+        }
+        .info-grid .value {
+            font-weight: 500;
+        }
+        .info-grid .value a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .tag {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+        .note-item {
+            border-left: 3px solid var(--accent2);
+            padding: 8px 12px;
+            margin-bottom: 10px;
+            background: rgba(167, 139, 250, 0.05);
+            border-radius: 0 8px 8px 0;
+        }
+        .note-item .note-date {
+            font-size: 0.8em;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+        .promesse-item {
+            border-left: 3px solid var(--orange);
+            padding: 8px 12px;
+            margin-bottom: 10px;
+            background: rgba(251, 146, 60, 0.05);
+            border-radius: 0 8px 8px 0;
+        }
+        .promesse-item .note-date {
+            font-size: 0.8em;
+            color: var(--orange);
+            margin-bottom: 4px;
+        }
+        .vie-perso-item {
+            padding: 4px 0;
+        }
+        .vie-perso-item .vp-label {
+            color: var(--green);
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+        .empty {
+            color: var(--muted);
+            font-style: italic;
+            font-size: 0.9em;
+        }
+        .back-link {
+            display: inline-block;
+            color: var(--muted);
+            text-decoration: none;
+            margin-bottom: 16px;
+            font-size: 0.9em;
+        }
+        .back-link:hover { color: var(--accent); }
+        @media (max-width: 480px) {
+            body { padding: 10px; }
+            .header h1 { font-size: 1.4em; }
+            .info-grid { grid-template-columns: 1fr; gap: 4px; }
+            .info-grid .label { font-weight: 600; color: var(--text); }
+        }
+    </style>
+</head>
+<body>
+    <a href="/" class="back-link">&larr; Retour au CRM</a>
+
+    <div class="header">
+        <h1>{{ briefing.contact.nom_complet }}</h1>
+        {% if briefing.contact.categorie %}
+        <span class="categorie">{{ briefing.contact.categorie }}</span>
+        {% endif %}
+    </div>
+
+    {# === CONTEXTE PRO === #}
+    {% set pro = briefing.contexte_pro %}
+    {% if pro.societe or pro.poste or pro.telephone or pro.email or pro.ville %}
+    <div class="section">
+        <h2><span class="icon">💼</span> Contexte professionnel</h2>
+        <div class="info-grid">
+            {% if pro.societe %}
+            <span class="label">Société</span><span class="value">{{ pro.societe }}</span>
+            {% endif %}
+            {% if pro.poste %}
+            <span class="label">Poste</span><span class="value">{{ pro.poste }}</span>
+            {% endif %}
+            {% if pro.secteur %}
+            <span class="label">Secteur</span><span class="value">{{ pro.secteur }}</span>
+            {% endif %}
+            {% if pro.ville %}
+            <span class="label">Ville</span><span class="value">{{ pro.ville }}</span>
+            {% endif %}
+            {% if pro.telephone %}
+            <span class="label">Tél</span><span class="value"><a href="tel:{{ pro.telephone }}">{{ pro.telephone }}</a></span>
+            {% endif %}
+            {% if pro.email %}
+            <span class="label">Email</span><span class="value"><a href="mailto:{{ pro.email }}">{{ pro.email }}</a></span>
+            {% endif %}
+            {% if pro.linkedin %}
+            <span class="label">LinkedIn</span><span class="value"><a href="{{ pro.linkedin }}" target="_blank">Profil</a></span>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    {# === VIE PERSO === #}
+    {% if briefing.vie_perso %}
+    <div class="section">
+        <h2><span class="icon">🏠</span> Vie personnelle</h2>
+        {% for key, val in briefing.vie_perso.items() %}
+        <div class="vie-perso-item">
+            <span class="vp-label">{{ key | replace('_', ' ') }}</span> :
+            {% if val is iterable and val is not string %}
+                {{ val | join(', ') }}
+            {% else %}
+                {{ val }}
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {# === SUJETS DE CONVERSATION === #}
+    {% if briefing.sujets_conversation %}
+    <div class="section">
+        <h2><span class="icon">💬</span> Sujets de conversation</h2>
+        <div class="tag-list">
+            {% for sujet in briefing.sujets_conversation %}
+            <span class="tag">{{ sujet }}</span>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {# === DERNIER CONTACT === #}
+    {% if briefing.dernier_contact %}
+    <div class="section">
+        <h2><span class="icon">📅</span> Dernier contact</h2>
+        <div class="info-grid">
+            {% for key, val in briefing.dernier_contact.items() %}
+            <span class="label">{{ key | replace('_', ' ') | capitalize }}</span>
+            <span class="value">
+                {% if val is iterable and val is not string %}
+                    {{ val | join(', ') }}
+                {% else %}
+                    {{ val }}
+                {% endif %}
+            </span>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {# === PROMESSES EN ATTENTE === #}
+    {% if briefing.promesses_en_attente %}
+    <div class="section">
+        <h2><span class="icon">⚠️</span> Promesses en attente</h2>
+        {% for p in briefing.promesses_en_attente %}
+        <div class="promesse-item">
+            <div class="note-date">{{ p.date }}</div>
+            <div>{{ p.contenu }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {# === NOTES RÉCENTES === #}
+    <div class="section">
+        <h2><span class="icon">📝</span> Notes récentes</h2>
+        {% if briefing.notes_recentes %}
+            {% for n in briefing.notes_recentes %}
+            <div class="note-item">
+                <div class="note-date">{{ n.date }}</div>
+                <div>{{ n.contenu }}</div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="empty">Aucune note pour ce contact.</p>
+        {% endif %}
+    </div>
+
+    {# === INFO COMPLÉMENTAIRE === #}
+    {% if briefing.info_complementaire %}
+    <div class="section">
+        <h2><span class="icon">ℹ️</span> Info complémentaire</h2>
+        <p>{{ briefing.info_complementaire }}</p>
+    </div>
+    {% endif %}
+
+    {# === PARCOURS === #}
+    {% if briefing.parcours %}
+    <div class="section">
+        <h2><span class="icon">🛤️</span> Parcours</h2>
+        <p>{{ briefing.parcours }}</p>
+    </div>
+    {% endif %}
+</body>
+</html>

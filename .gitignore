@@ -1,0 +1,51 @@
+# Fichiers Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+*.egg-info/
+dist/
+build/
+
+# Donnees sensibles
+.env
+*.db
+*.sqlite
+*.sqlite3
+data/*
+!data/.gitkeep
+
+# Secrets
+config_local.py
+secrets.json
+*.key
+*.pem
+.secret_key
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Replit
+.replit_lock
+.upm/
+.cache/
+replit_zip_error_log.txt
+
+# Backups
+*.backup_*
+*.save

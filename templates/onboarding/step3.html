@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Etape 3/3 - Validation</title>
+    <link rel="stylesheet" href="/static/css/onboarding.css">
+</head>
+<body>
+    <div class="onboarding-container">
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: 100%;"></div>
+        </div>
+
+        <h2>Votre profil est pret !</h2>
+        <p class="subtitle">Verifiez et validez vos informations avant de commencer.</p>
+
+        <div class="profile-summary">
+            <div class="summary-section">
+                <h3>&#128100; Professionnel</h3>
+                <div class="summary-item">
+                    <strong>Nom :</strong> {{ profile.prenom }} {{ profile.nom }}
+                </div>
+                {% if profile.poste %}
+                <div class="summary-item">
+                    <strong>Poste :</strong> {{ profile.poste }}
+                </div>
+                {% endif %}
+                {% if profile.entreprise %}
+                <div class="summary-item">
+                    <strong>Entreprise :</strong> {{ profile.entreprise }}
+                </div>
+                {% endif %}
+                {% if profile.secteur %}
+                <div class="summary-item">
+                    <strong>Secteur :</strong> {{ profile.secteur }}
+                </div>
+                {% endif %}
+                {% if profile.linkedin %}
+                <div class="summary-item">
+                    <strong>LinkedIn :</strong>
+                    <a href="{{ profile.linkedin }}" target="_blank" rel="noopener">{{ profile.linkedin }}</a>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="summary-section">
+                <h3>&#127891; Formation</h3>
+                <div class="summary-item">
+                    {{ profile.formation or 'Non renseigne' }}
+                </div>
+            </div>
+
+            <div class="summary-section">
+                <h3>&#127919; Hobbies &amp; Interets</h3>
+                <div class="summary-item">
+                    {% if profile.hobbies %}
+                        {{ profile.hobbies | join(', ') }}
+                        {% if profile.sport_details %}
+                        <br><small>Sports : {{ profile.sport_details }}</small>
+                        {% endif %}
+                    {% else %}
+                        Non renseigne
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="summary-section">
+                <h3>&#128172; Preferences</h3>
+                <div class="summary-item">
+                    <strong>Style :</strong> {{ profile.style_communication or 'Non renseigne' }}
+                </div>
+                <div class="summary-item">
+                    <strong>Objectifs CRM :</strong>
+                    {% if profile.objectifs_crm %}
+                        {{ profile.objectifs_crm | join(', ') }}
+                    {% else %}
+                        Non renseigne
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <form method="POST" action="/onboarding/step3">
+            <div class="form-actions">
+                <a href="/onboarding/step2" class="btn-secondary">&larr; Modifier</a>
+                <button type="submit" class="btn-primary">
+                    &#10004; Valider et commencer
+                </button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

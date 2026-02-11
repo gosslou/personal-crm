@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Etape 2/3 - Personnalisation</title>
+    <link rel="stylesheet" href="/static/css/onboarding.css">
+</head>
+<body>
+    <div class="onboarding-container">
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: 66%;"></div>
+        </div>
+
+        <h2>Personnalisez votre experience</h2>
+
+        <div class="profile-preview">
+            <h3>&#10004; Profil professionnel enrichi</h3>
+            <div class="profile-item">
+                <strong>Nom :</strong> {{ profile.prenom }} {{ profile.nom }}
+            </div>
+            {% if profile.poste %}
+            <div class="profile-item">
+                <strong>Poste :</strong> {{ profile.poste }}
+            </div>
+            {% endif %}
+            {% if profile.entreprise %}
+            <div class="profile-item">
+                <strong>Entreprise :</strong> {{ profile.entreprise }}
+            </div>
+            {% endif %}
+            {% if profile.secteur %}
+            <div class="profile-item">
+                <strong>Secteur :</strong> {{ profile.secteur }}
+            </div>
+            {% endif %}
+        </div>
+
+        <form method="POST" action="/onboarding/step2">
+            <div class="form-group">
+                <label>Formation principale</label>
+                <select name="formation" required>
+                    <option value="">Selectionnez...</option>
+                    <option value="Grande ecole de commerce">Grande ecole (HEC, ESSEC, ESCP...)</option>
+                    <option value="Ecole ingenieur">Ecole d'ingenieur</option>
+                    <option value="Sciences Po">Sciences Po</option>
+                    <option value="Universite">Universite</option>
+                    <option value="Double diplome">Double diplome</option>
+                    <option value="Autre">Autre</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Hobbies &amp; Passions (plusieurs choix possibles)</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="hobbies" value="Vin/Oenologie">
+                        <span>&#127863; Vin / Oenologie</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="hobbies" value="Sport">
+                        <span>&#127939; Sport</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="hobbies" value="Programmation/Tech">
+                        <span>&#128187; Programmation / Tech</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="hobbies" value="Voyages">
+                        <span>&#9992; Voyages</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="hobbies" value="Lecture">
+                        <span>&#128218; Lecture</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="hobbies" value="Gastronomie">
+                        <span>&#127860; Gastronomie</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="hobbies" value="Art/Culture">
+                        <span>&#127912; Art / Culture</span>
+                    </label>
+                </div>
+
+                <div class="conditional-field" id="sport-details" style="display:none;">
+                    <label>Quels sports ?</label>
+                    <input
+                        type="text"
+                        name="sport_details"
+                        placeholder="Ex: Running, Basket, Triathlon..."
+                    >
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Style de communication professionnelle</label>
+                <select name="style_communication" required>
+                    <option value="">Selectionnez...</option>
+                    <option value="Formel et structure">Formel et structure</option>
+                    <option value="Direct et factuel">Direct et factuel</option>
+                    <option value="Decontracte mais pro">Decontracte mais pro</option>
+                    <option value="Tres personnalise">Tres personnalise selon le contact</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Objectifs principaux du CRM (plusieurs choix possibles)</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="objectifs_crm" value="Maintenir reseau PE/VC">
+                        <span>Maintenir reseau PE/VC</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="objectifs_crm" value="Sourcing de deals">
+                        <span>Sourcing de deals</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="objectifs_crm" value="Relations LP/investisseurs">
+                        <span>Relations LP/investisseurs</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="objectifs_crm" value="Suivi perso+pro">
+                        <span>Suivi contacts perso + pro</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="objectifs_crm" value="Networking general">
+                        <span>Networking general</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a href="/onboarding/step1" class="btn-secondary">&larr; Retour</a>
+                <button type="submit" class="btn-primary">Continuer &rarr;</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.querySelectorAll('input[name="hobbies"]').forEach(function(checkbox) {
+            checkbox.addEventListener('change', function() {
+                var sportDetails = document.getElementById('sport-details');
+                var sportChecked = Array.from(
+                    document.querySelectorAll('input[name="hobbies"]:checked')
+                ).some(function(cb) { return cb.value === 'Sport'; });
+                sportDetails.style.display = sportChecked ? 'block' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>
