@@ -86,6 +86,21 @@ Au premier lancement, l'onboarding vous guide pour :
 
 ---
 
+## Mises a jour
+
+Votre CRM dispose d'un systeme de mise a jour integre.
+
+**Pour mettre a jour :**
+1. Cliquez sur "Mises a jour" dans l'en-tete du CRM
+2. Si une mise a jour est disponible, cliquez sur "Mettre a jour maintenant"
+3. Redemarrez l'application
+
+Vos donnees sont sauvegardees automatiquement avant chaque mise a jour. Les 5 dernieres sauvegardes sont conservees dans `data/backups/`.
+
+Voir [UPDATE_SYSTEM.md](./docs/UPDATE_SYSTEM.md) pour plus de details.
+
+---
+
 ## Configuration avancee
 
 ### Variables d'environnement

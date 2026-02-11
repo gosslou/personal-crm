@@ -28,7 +28,7 @@ class Config:
 
     # Application
     APP_NAME = "CRM Personnel"
-    APP_VERSION = "1.0.0"
+    APP_VERSION = "1.1.0"
 
     # GitHub (pour systeme de mise a jour)
     GITHUB_REPO = "gosslou/personal-crm"
